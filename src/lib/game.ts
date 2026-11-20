@@ -18,21 +18,21 @@ export type Meme = {
 
 const referenceMemes: Meme[] = [
   {
-    id: "chloe", name: "Side-Eye Chloe", image: "/memes/side-eye-chloe.jpg",
+    id: "chloe", name: "Side-Eye Chloe", image: `${process.env.NEXT_PUBLIC_BASE_PATH ?? ""}/memes/side-eye-chloe.jpg`,
     alt: "Chloe giving a skeptical sideways look with a slightly open mouth",
     mood: "PROFESSIONAL SIDE-EYE", difficulty: "A little attitude", color: "pink",
     prompt: "One raised brow. A tiny grimace. Maximum judgment.",
     tip: "Look slightly to the side. Let your eyebrows do the talking.", position: "50% 45%",
   },
   {
-    id: "disaster", name: "Disaster Girl", image: "/memes/disaster-girl.jpg",
+    id: "disaster", name: "Disaster Girl", image: `${process.env.NEXT_PUBLIC_BASE_PATH ?? ""}/memes/disaster-girl.jpg`,
     alt: "Disaster Girl looking back with a mischievous half-smile",
     mood: "INNOCENT. OBVIOUSLY.", difficulty: "Main character energy", color: "lavender",
     prompt: "A knowing smirk. A subtle head tilt. Absolutely no regrets.",
     tip: "Turn your head a little and give the camera your sneakiest smile.", position: "72% 50%",
   },
   {
-    id: "success", name: "Success Kid", image: "/memes/success-kid.jpg",
+    id: "success", name: "Success Kid", image: `${process.env.NEXT_PUBLIC_BASE_PATH ?? ""}/memes/success-kid.jpg`,
     alt: "Success Kid clenching his fist with a determined expression",
     mood: "SMALL WIN. BIG ENERGY.", difficulty: "Feeling victorious", color: "orange",
     prompt: "Clench that fist. Scrunch that face. You just won at life.",
@@ -88,7 +88,7 @@ const reactionPacks: Meme[] = [
   ["aayein", "Aayein?", "Indian reactions", "Turn slightly sideways, knit your brows and part your lips in confusion."],
   ["jethalal", "Jethalal Surprised", "Indian reactions", "Lift your brows, widen your eyes and let your jaw drop."],
 ].map(([id, name, pack, prompt], index) => ({
-  id, name, prompt, image: `/memes/${id}.jpg`, alt: `${name}. ${prompt}`,
+  id, name, prompt, image: `${process.env.NEXT_PUBLIC_BASE_PATH ?? ""}/memes/${id}.jpg`, alt: `${name}. ${prompt}`,
   mood: pack.toUpperCase(), difficulty: pack, color: colors[index % colors.length],
   tip: "Set your head angle first, then match the eyes and mouth.",
 }));
@@ -98,7 +98,7 @@ export const memes: Meme[] = [
   ...reactionPacks,
   ...libraryTemplates.map(([id, name, prompt], index) => ({
     id, name, prompt,
-    image: `/memes/${id}.jpg`,
+    image: `${process.env.NEXT_PUBLIC_BASE_PATH ?? ""}/memes/${id}.jpg`,
     alt: `${name} meme. ${prompt}`,
     color: colors[index % colors.length],
     mood: "REACTION MEME",

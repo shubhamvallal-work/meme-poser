@@ -10,9 +10,9 @@ const references = new Map<string, Pose | null>();
 
 async function loadModel() {
   const { FaceLandmarker, FilesetResolver } = await import("@mediapipe/tasks-vision");
-  const files = await FilesetResolver.forVisionTasks("/vision-wasm");
+  const files = await FilesetResolver.forVisionTasks(`${process.env.NEXT_PUBLIC_BASE_PATH ?? ""}/vision-wasm`);
   return FaceLandmarker.createFromOptions(files, {
-    baseOptions: { modelAssetPath: "/face_landmarker.task" },
+    baseOptions: { modelAssetPath: `${process.env.NEXT_PUBLIC_BASE_PATH ?? ""}/face_landmarker.task` },
     runningMode: "IMAGE",
     outputFaceBlendshapes: true,
     outputFacialTransformationMatrixes: true,

@@ -1,7 +1,10 @@
-import { MemeMatch } from "@/components/meme-match";
-import { memes } from "@/lib/game";
+import { Suspense } from "react";
+import { HomeClient } from "@/components/home-client";
 
-export default async function Home({ searchParams }: { searchParams: Promise<{ meme?: string | string[] }> }) {
-  const { meme } = await searchParams;
-  return <MemeMatch firstMeme={memes.find(item => item.id === meme)} />;
+export default function Home() {
+  return (
+    <Suspense fallback={null}>
+      <HomeClient />
+    </Suspense>
+  );
 }
