@@ -1,4 +1,4 @@
-const basePath = process.env.NODE_ENV === "production" ? "/meme-poser" : "";
+const basePath = process.env.NODE_ENV === "production" ? "/memematch" : "";
 
 const nextConfig = {
   output: "export",
