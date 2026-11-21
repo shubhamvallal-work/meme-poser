@@ -1,5 +1,17 @@
 // Local single-face crops. Source links identify the original templates.
 export const extraReactions = [
+  ["tom-pearl", "Tom Pearl Has a Snack", "Global reactions", "Puff out your cheeks, seal your lips and squint like you got caught mid-bite."], // https://www.memebuilder.ai/new-memes/tom-pearl-has-a-snack
+  ["arpit-stare", "Arpit Bala’s Death Stare", "Indian reactions", "Tuck your chin, press your lips flat and look straight up from under your eyebrows."], // https://templates.meme/templates/arpit-bala-death-stare
+  ["deceive", "Why Would I Deceive You?", "Global reactions", "Look off to one side, lift both brows and show your top teeth in an eager smile."], // https://www.memebuilder.ai/new-memes/why-would-i-deceive-you
+  ["tea-laugh", "The Chai Break Laugh", "Indian reactions", "Turn to the side, dip your head and squeeze your eyes shut in a toothy laugh."], // https://memekosh.com/templates/boy-drinking-tea-laughing
+  ["pattinson-hansen", "Pattinson’s Chris Hansen Stare", "Global reactions", "Keep your chin level, look right into the lens and press your mouth into a straight line."], // https://www.memebuilder.ai/new-memes/robert-pattinson-as-chris-hansen
+  ["ek-second", "Lekin Ek Second!", "Indian reactions", "Turn your head slightly, widen your eyes and leave your lips parted like something doesn’t add up."], // https://memekosh.com/templates/lekin-ek-second-carryminati
+  ["private-property", "Private Property", "Global reactions", "Pinch your eyebrows together and leave your mouth half open as you peer out at a visitor."], // https://www.memebuilder.ai/new-memes/private-property
+  ["kehna", "Arey, Kehna Kya Chahte Ho?", "Indian reactions", "Tilt your head, draw your brows together and open your mouth like you need that explained again."], // https://memekosh.com/templates/arey-kehna-kya-chahte-ho
+  ["la-peace", "It’s La Peace", "Global reactions", "Turn slightly sideways, raise your inner brows and pull your closed lips into a small smile."], // https://www.memebuilder.ai/new-memes/it-s-la-peace
+  ["jhooth", "Tu Jhooth Bol Raha Hai", "Indian reactions", "Angle your chin up, look straight ahead and push your lips to one side in disbelief."], // https://templates.meme/templates/tu-jhooth-bol-raha-hai
+  ["matt-damon", "Matt Damon’s Silent Scream", "Global reactions", "Squeeze your eyes shut, wrinkle your nose and drop your jaw as far as it goes."], // https://www.memebuilder.ai/new-memes/matt-damon-meme
+  ["bhidu", "Abhi Maza Ayega Na Bhidu", "Indian reactions", "Tip your chin up and grin to one side with your mouth open, like the fun is about to start."], // https://memekosh.com/templates/abhi-maza-ayega-na-bhidu
   ["quesadilla", "More Like a Quesadilla", "2026 reactions", "Raise your eyebrows, open your eyes wide and make a tall O with your mouth."], // https://knowyourmeme.com/memes/more-like-a-quesadilla-guy
   ["rumpy", "Tiptoeing in My Jordans", "2026 reactions", "Tuck your chin, look up and curl your lips into a mischievous smile."], // https://imgflip.com/memetemplate/669993481
   ["britt", "The Hearing Stare", "2026 reactions", "Widen your eyes and let your jaw hang slightly open."], // https://imgflip.com/memetemplate/669098131

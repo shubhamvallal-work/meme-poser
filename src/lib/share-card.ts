@@ -1,20 +1,5 @@
 import { verdict, type Meme, type Result } from "./game";
 
-export function challengeLink(id: string): string | null {
-  try {
-    const url = new URL(process.env.NEXT_PUBLIC_GAME_URL || window.location.origin);
-    const host = url.hostname;
-    if (url.protocol !== "https:" || !host.includes(".") ||
-        /(?:^|\.)(?:localhost|local|test)$/.test(host) ||
-        /^(?:127\.|10\.|192\.168\.|172\.(?:1[6-9]|2\d|3[01])\.|169\.254\.|0\.)/.test(host)) return null;
-    const link = new URL("/", url.origin);
-    link.searchParams.set("meme", id);
-    return link.href;
-  } catch {
-    return null;
-  }
-}
-
 async function loadImage(src: string) {
   const img = new Image();
   img.src = src;
@@ -22,7 +7,7 @@ async function loadImage(src: string) {
   return img;
 }
 
-export async function renderShareCard(meme: Meme, result: Result, link: string | null) {
+export async function renderShareCard(meme: Meme, result: Result) {
   const [reference, pose] = await Promise.all([
     loadImage(meme.image),
     loadImage(result.snapshot),
@@ -68,7 +53,6 @@ export async function renderShareCard(meme: Meme, result: Result, link: string |
   ctx.strokeRect(62, 785, 956, 110);
   label(result.score === null ? "UNSCORED" : result.score + " / 100 PTS", 82, 861, 66);
   label(result.score === null ? "Your turn to strike a pose." : verdict(result.score).title, 62, 957, 39);
-  if (link) label(link, 62, 1007, 27);
   const blob = await new Promise<Blob>((resolve, reject) => canvas.toBlob(
     png => png ? resolve(png) : reject(new Error("PNG export failed")), "image/png"
   ));

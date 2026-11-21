@@ -25,8 +25,8 @@ npm run build
 ## What is implemented
 
 - Landing page with the requested palette, local Space Grotesk / DM Sans fonts, animated headline, spring interactions, meme collage, and background shapes.
-- A 109-meme face deck includes recent reactions, Indian memes, brainrot and classics. Each playable photo passed a single-face check with the bundled model. Each round shows the meme name and a pose prompt.
-- Final Boss sets the deck to 15 rounds. The first 14 use your chosen timer and the final round auto-captures after three seconds. The boss score averages the usual score with the weakest metric.
+- A 121-meme face deck includes recent reactions, Indian memes, brainrot and classics. Each playable photo passed a single-face check with the bundled model. Each round shows the meme name and a pose prompt.
+- Final Boss sets the deck to 15 rounds. Every round auto-captures after three seconds. The boss score averages the usual score with the weakest metric.
 - Browser-local live camera preview, a real captured snapshot, a responsive comparison layout, a timer dropdown (3, 5, 10, 15 or 30 seconds, or manual capture), pause/resume, manual capture, and automatic capture. Opening an informational dialog pauses the countdown.
 - Local MediaPipe expression comparison, metric bars, finite confetti, and a highest-first recap for sets of 3, 5, 10, 15 or 20 rounds. Endless reshuffles after each full deck and offers Stop game from the first round. Stopping returns home before the first photo, or shows rankings once a photo has been captured.
 - Result card with the captured camera snapshot, with local 1080×1080 PNG export and native file sharing.
@@ -39,7 +39,7 @@ The app requests front-camera access only after the player selects **Enable Came
 
 The bundled MediaPipe Face Landmarker measures blendshape coefficients in the meme and the captured photo. The game compares movement intensity in the eyes, brows and mouth, and measures eyelid opening, lip gap, head tilt, turn and nod. Reference movements drive a weighted error calculation, with tolerance for small differences. Scores are game points out of 100. The result card shows the measured differences behind the score. Captures with multiple detected faces stay unscored. A missing photo, unreadable face, or model error yields an unscored card. Model source: https://storage.googleapis.com/mediapipe-models/face_landmarker/face_landmarker/float16/1/face_landmarker.task. The local /vision-wasm files come from the pinned @mediapipe/tasks-vision package.
 
-Every expanded result has Share Card and Save PNG actions. On public HTTPS deployments the share payload and PNG include a challenge URL for the same meme. Set `NEXT_PUBLIC_GAME_URL` before building to use a canonical public HTTPS origin. Local previews omit the URL unless configured. Links contain only the meme ID. Game state is kept in memory, so refresh returns to the landing page. Gameplay is a typed state machine within the `/` App Router route; browser history is not used for rounds.
+Every expanded result has Share Card and Save PNG actions. Game state is kept in memory, so refresh returns to the landing page. Gameplay is a typed state machine within the `/` App Router route; browser history is not used for rounds.
 
 ## Manual smoke test
 

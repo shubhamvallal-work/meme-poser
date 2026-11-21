@@ -2,10 +2,10 @@
 
 import { useEffect, useState } from "react";
 import { type Meme, type Result } from "@/lib/game";
-import { challengeLink, renderShareCard } from "@/lib/share-card";
+import { renderShareCard } from "@/lib/share-card";
 import { Button } from "./ui";
 
-type Export = { file: File; href: string; link: string | null };
+type Export = { file: File; href: string };
 
 export function ShareActions({ meme, result }: { meme: Meme; result: Result }) {
   const [card, setCard] = useState<Export | null>(null);
@@ -16,11 +16,10 @@ export function ShareActions({ meme, result }: { meme: Meme; result: Result }) {
   useEffect(() => {
     let active = true;
     let href: string | undefined;
-    const link = challengeLink(meme.id);
-    renderShareCard(meme, result, link).then(file => {
+    renderShareCard(meme, result).then(file => {
       if (!active) return;
       href = URL.createObjectURL(file);
-      setCard({ file, href, link });
+      setCard({ file, href });
     }).catch(() => { if (active) setFailed(true); });
     return () => {
       active = false;
@@ -35,7 +34,6 @@ export function ShareActions({ meme, result }: { meme: Meme; result: Result }) {
       title: "MemeMatch · " + meme.name,
       text: result.score === null ? "Try my " + meme.name + " challenge!" :
         "I scored " + result.score + "/100 on " + meme.name + ". Your turn!",
-      ...(card.link && { url: card.link }),
     };
     setMessage("");
     try {
@@ -54,16 +52,6 @@ export function ShareActions({ meme, result }: { meme: Meme; result: Result }) {
     }
   }
 
-  async function copyLink() {
-    if (!card?.link) return;
-    try {
-      await navigator.clipboard.writeText(card.link);
-      setMessage("Challenge link copied. Paste it with your card.");
-    } catch {
-      setMessage("Copy this challenge link: " + card.link);
-    }
-  }
-
   return <div className="card-export">
     <div className="card-export-controls">
       {failed ? <Button onClick={() => { setFailed(false); setAttempt(a => a + 1); }}>Retry PNG export</Button> :
@@ -71,9 +59,7 @@ export function ShareActions({ meme, result }: { meme: Meme; result: Result }) {
           {card ? "SHARE CARD" : "PREPARING PNG…"}
         </Button>}
       {card && <a className="text-button" href={card.href} download={card.file.name}>Save PNG</a>}
-      {card?.link && <button type="button" className="text-button" onClick={copyLink}>Copy challenge link</button>}
     </div>
-    <p role="status">{failed ? "The card image could not be prepared." : message ||
-      (card?.link ? "Includes a link to play this meme." : "")}</p>
+    <p role="status">{failed ? "The card image could not be prepared." : message}</p>
   </div>;
 }

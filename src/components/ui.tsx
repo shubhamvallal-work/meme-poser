@@ -3,8 +3,10 @@
 import { motion, type HTMLMotionProps } from "motion/react";
 import { useEffect, useRef, type ReactNode } from "react";
 
-export function Icon({ name, className = "" }: { name: "spark" | "camera" | "smile" | "close" | "download" | "shuffle" | "pause" | "play" | "check" | "heart"; className?: string }) {
+export function Icon({ name, className = "" }: { name: "spark" | "camera" | "smile" | "close" | "download" | "shuffle" | "pause" | "play" | "check" | "heart" | "volume" | "mute"; className?: string }) {
   const paths: Record<typeof name, ReactNode> = {
+    volume: <><path d="M3 9h4l5-4v14l-5-4H3zM16 8q4 4 0 8m3-11q7 7 0 14" /></>,
+    mute: <><path d="M3 9h4l5-4v14l-5-4H3zM16 9l6 6m0-6-6 6" /></>,
     spark: <path d="m12 2 2.5 7.5L22 12l-7.5 2.5L12 22l-2.5-7.5L2 12l7.5-2.5L12 2Z" />,
     camera: <><path d="M8 6 9.5 3h5L16 6h4a2 2 0 0 1 2 2v11H2V8a2 2 0 0 1 2-2Z" /><circle cx="12" cy="12" r="4" /></>,
     smile: <><circle cx="12" cy="12" r="10" /><path d="M8 8v2m8-2v2M7 14q5 7 10 0" /></>,
@@ -27,7 +29,7 @@ export function Face({ className = "", cheeky = false }: { className?: string; c
   return <svg aria-hidden="true" className={className} viewBox="0 0 180 180" fill="none"><circle cx="90" cy="90" r="80" fill="currentColor" stroke="#202020" strokeWidth="5" /><g stroke="#202020" strokeWidth="7" strokeLinecap="round"><path d={cheeky ? "m48 61 23 7m37-7 23-7" : "M59 53v22m62-22v22"} /><path d="M45 102q45 58 90 0" /></g></svg>;
 }
 
-export function Dialog({ title, children, onClose }: { title: string; children: ReactNode; onClose: () => void }) {
+export function Dialog({ title, children, onClose, showTagline = true }: { title: string; showTagline?: boolean; children: ReactNode; onClose: () => void }) {
   const ref = useRef<HTMLDialogElement>(null);
   useEffect(() => {
     const dialog = ref.current;
@@ -43,7 +45,7 @@ export function Dialog({ title, children, onClose }: { title: string; children: 
   return <dialog ref={ref} className="arcade-dialog" onCancel={onClose} onClick={(event) => { if (event.target === event.currentTarget) onClose(); }} aria-labelledby="dialog-title">
     <div className="dialog-content">
       <button type="button" onClick={onClose} className="icon-button dialog-close" aria-label="Close dialog"><Icon name="close" /></button>
-      <span className="eyebrow">A LITTLE LESS SERIOUS. A LOT MORE SILLY.</span>
+      {showTagline && <span className="eyebrow">A LITTLE LESS SERIOUS. A LOT MORE SILLY.</span>}
       <h2 id="dialog-title">{title}</h2>
       {children}
     </div>

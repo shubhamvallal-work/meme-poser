@@ -121,13 +121,13 @@ export const bossSeconds = 3;
 const faceBossIds = ["chloe", "agnes", "ermg", "michael-scott", "sparta", "mordor"];
 type GameState =
   | { screen: "landing" }
-  | { screen: "reveal"; meme: Meme }
+  | { screen: "reveal"; meme?: Meme }
   | { screen: "pose"; meme: Meme; deck: Meme[]; endless: boolean; finishing?: boolean; seconds: number; rounds: RoundResult[] }
   | { screen: "recap"; rounds: RoundResult[] };
 
 type GameAction =
   | { type: "home" }
-  | { type: "choose"; meme: Meme }
+  | { type: "choose"; meme?: Meme }
   | { type: "start"; deck: Meme[]; endless: boolean; seconds: number }
   | { type: "capture"; memeId: string; result: Result; nextDeck?: Meme[] }
   | { type: "finish"; scoringMemeId?: string }

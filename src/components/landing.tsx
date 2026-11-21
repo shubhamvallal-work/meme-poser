@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import { motion, useReducedMotion } from "motion/react";
 import { memes } from "@/lib/game";
 import { Button, Face, Icon } from "./ui";
@@ -21,7 +20,6 @@ export function HowToPlay() {
 
 export function Landing({ onPlay }: { onPlay: () => void }) {
   const reduced = useReducedMotion();
-  const [tickerPaused, setTickerPaused] = useState(false);
   return <>
     <section className="landing-hero" aria-labelledby="hero-title">
       <motion.div className="hero-orbit orbit-one" aria-hidden="true" animate={reduced ? {} : { x: [0, -24, 0], y: [0, 18, 0] }} transition={{ duration: 4.5 }} /><motion.div className="hero-orbit orbit-two" aria-hidden="true" animate={reduced ? {} : { x: [0, 20, 0], y: [0, -14, 0] }} transition={{ duration: 4.5 }} />
@@ -43,10 +41,7 @@ export function Landing({ onPlay }: { onPlay: () => void }) {
       </div>
       <div className="hero-bottom"><span>A FACE-OFF WITH THE INTERNET.</span><span>EST. 2026 <span aria-hidden="true">↘</span></span></div>
     </section>
-    <div className="ticker"><div className="ticker-track" aria-hidden="true" data-paused={tickerPaused}>{Array.from({ length: 4 }, (_, i) => <span key={i}>LESS SCROLLING <Icon name="spark" /> MORE LOL-ING <Icon name="spark" /> MAKE A FACE <Icon name="spark" /> MAKE IT WEIRD <Icon name="spark" /></span>)}</div>
-      <button type="button" className="ticker-control" aria-label={tickerPaused ? "Resume scrolling banner" : "Pause scrolling banner"} onClick={() => setTickerPaused(!tickerPaused)}>
-        <Icon name={tickerPaused ? "play" : "pause"} />
-      </button>
+    <div className="ticker"><div className="ticker-track" aria-hidden="true">{Array.from({ length: 4 }, (_, i) => <span key={i}>LESS SCROLLING <Icon name="spark" /> MORE LOL-ING <Icon name="spark" /> MAKE A FACE <Icon name="spark" /> MAKE IT WEIRD <Icon name="spark" /></span>)}</div>
     </div>
     <section id="how-it-works" className="how-it-works" aria-labelledby="how-heading"><div className="section-kicker"><h2 id="how-heading">THREE STEPS. ZERO CHILL.</h2><span>YOUR FACE IS THE CONTROLLER.</span></div><HowToPlay /></section>
   </>;

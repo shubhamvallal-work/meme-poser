@@ -2,41 +2,46 @@
 
 import Image from "next/image";
 import { motion, useReducedMotion } from "motion/react";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
 import { bossRounds, bossSeconds, type Meme, type Result, type RoundResult, verdict } from "@/lib/game";
 import { Button, Icon } from "./ui";
 import { MemeCard } from "./meme-card";
 import { ShareActions } from "./share-actions";
 
-export function RevealScreen({ meme, onStart, onShuffle }: { meme: Meme; onStart: (first: Meme, count: number | "endless", seconds: number, boss: boolean) => void; onShuffle: () => void }) {
+import { ArcadeSelect } from "./arcade-select";
+import type { PlaySound } from "./game-audio";
+
+type RoundCount = number | "endless";
+const roundOptions = [
+  ...[3, 5, 10, 15, 20].map(value => ({ value, label: String(value) })),
+  { value: "endless" as const, label: "Endless 🥵" },
+];
+const captureOptions = [
+  ...[3, 5, 10, 15, 30].map(value => ({ value, label: value + " seconds" })),
+  { value: 0, label: "Manual" },
+];
+
+export function RevealScreen({ onStart }: { onStart: (count: RoundCount, seconds: number, boss: boolean) => void }) {
   const [count, setCount] = useState<number | "endless">(10);
   const [seconds, setSeconds] = useState(15);
   const [boss, setBoss] = useState(false);
   const rounds = boss ? bossRounds : count;
+  const captureSeconds = boss ? bossSeconds : seconds;
   return <section className="game-stage reveal-stage">
-    <div className="screen-heading"><span className="eyebrow">SET UP YOUR GAME</span><h1>OH, IT&apos;S <span className="text-pink">ON.</span></h1><p>The internet has made its move. Your face is up next.</p></div>
-    <div className="reveal-layout">
-      <div className="reveal-card-wrap"><motion.div initial={{ rotate: -10, scale: 0.8 }} animate={{ rotate: -4, scale: 1 }} transition={{ type: "spring", stiffness: 160, damping: 14 }}><MemeCard meme={meme} priority /></motion.div><span className="turn-sticker">YOUR TURN!</span><span className="reveal-star" aria-hidden="true">✳</span></div>
-      <div className="reveal-copy"><span className={`pill ${meme.color}`}>{meme.mood}</span><h2>{meme.name}<span className="text-pink">.</span></h2><p className="reveal-prompt">{meme.prompt}</p><div className="tip-box"><Icon name="spark" /><p>{meme.tip}</p></div><div className="session-options">
-        <label htmlFor="round-count">Rounds</label>
-        <label htmlFor="capture-seconds">Auto-capture<span className="sr-only"> in seconds</span></label>
-        <select id="round-count" value={rounds} disabled={boss}
-          onChange={event => setCount(event.target.value === "endless" ? "endless" : Number(event.target.value))}>
-          {[3, 5, 10, 15, 20].map(value => <option key={value} value={value}>{value}</option>)}
-          <option value="endless">Endless 🥵</option>
-        </select>
-        <select id="capture-seconds" value={seconds} onChange={event => setSeconds(Number(event.target.value))}>
-          {[3, 5, 10, 15, 30].map(value => <option key={value} value={value}>{value} seconds</option>)}
-          <option value={0}>Manual</option>
-        </select>
+    <div className="screen-heading"><h1>GAME <span className="text-pink">SETUP.</span></h1></div>
+    <div className="setup-card">
+      <div className="session-options">
+        <ArcadeSelect id="round-count" label="Rounds" options={roundOptions} value={rounds} disabled={boss} onChange={setCount} />
+        <ArcadeSelect id="capture-seconds" label="Auto-capture" options={captureOptions} value={captureSeconds} disabled={boss} onChange={setSeconds} />
       </div>
       <fieldset className="game-modes">
         <legend>Round options</legend>
         <label><input type="checkbox" role="switch" checked={boss} onChange={e => setBoss(e.target.checked)} />
-          <span><strong>Final Boss</strong><small>Play {bossRounds} rounds. Round {bossRounds} gives you {bossSeconds} seconds and uses stricter scoring.</small></span>
+          <span><strong>Final Boss</strong><small>Play {bossRounds} rounds at {bossSeconds} seconds each. The final round uses stricter scoring.</small></span>
         </label>
       </fieldset>
-      <Button onClick={() => onStart(meme, rounds, seconds, boss)}>START GAME <Icon name="play" /></Button><button type="button" className="text-button shuffle-button" onClick={onShuffle}><Icon name="shuffle" /> Give me another meme</button><p className="round-note">{rounds === "endless" ? "Stop the game anytime. Your completed rounds appear in the rankings." : "Every round draws a different meme."}</p></div>
+      <Button data-own-sound className="start-game" onClick={() => onStart(rounds, captureSeconds, boss)}>START GAME <Icon name="play" /></Button>
+      {rounds === "endless" && <p className="round-note">Stop anytime to see your completed rounds ranked.</p>}
     </div>
   </section>;
 }
@@ -57,7 +62,7 @@ const cameraHelp: Record<Exclude<CameraState, "ready">, string> = {
   insecure: "Open MemeMatch over HTTPS to use this device’s camera.",
 };
 
-export function PoseScreen({ onExit, meme, round, total, duration, suspended, finishing, onFinish, onCapture }: { onExit: () => void; meme: Meme; round: number; total: number | null; finishing: boolean; onFinish: (scoringMemeId?: string) => void; duration: number; suspended: boolean; onCapture: (snapshot: string) => void }) {
+export function PoseScreen({ soundToggle, playSound, onExit, meme, round, total, duration, suspended, finishing, onFinish, onCapture }: { soundToggle: ReactNode; playSound: PlaySound; onExit: () => void; meme: Meme; round: number; total: number | null; finishing: boolean; onFinish: (scoringMemeId?: string) => void; duration: number; suspended: boolean; onCapture: (snapshot: string) => void }) {
   const [cameraState, setCameraState] = useState<CameraState>("idle");
   const [shutter, setShutter] = useState<{ memeId: string; photo: string } | null>(null);
   const frozenPhoto = shutter?.memeId === meme.id ? shutter.photo : null;
@@ -132,14 +137,20 @@ export function PoseScreen({ onExit, meme, round, total, duration, suspended, fi
   }, [cameraState, meme.id]);
 
   return <section className="game-stage pose-stage">
-    <header className="screen-heading pose-heading" aria-live="polite" aria-atomic="true">
-      <span className="eyebrow">ROUND {round}{total === null ? " · ENDLESS 🥵" : ` OF ${total}`}{meme.boss && " · FINAL BOSS"}</span>
-      {total === null ? <button type="button" className="finish-set" disabled={finishing} onClick={() => {
-        requestId.current++;
-        stopCamera();
-        onFinish(frozenPhoto ? meme.id : undefined);
-      }}>{finishing ? "Finishing…" : "Stop game"}</button> :
-        <button type="button" className="pose-exit" aria-label="Exit game and return home" onClick={onExit}><Icon name="close" /></button>}
+    <header className="screen-heading pose-heading">
+      <div className="round-toolbar">
+        <div className="round-progress" role="status" aria-atomic="true">
+          <strong>ROUND {round} {total === null ? "· ENDLESS" : `OF ${total}`}{meme.boss && " · FINAL BOSS"}</strong>
+          {total !== null && <progress aria-label="Current round" value={round} max={total} aria-valuetext={`Round ${round} of ${total}`} />}
+        </div>
+        {soundToggle}
+        {total === null ? <button type="button" className="finish-set" disabled={finishing} onClick={() => {
+          requestId.current++;
+          stopCamera();
+          onFinish(frozenPhoto ? meme.id : undefined);
+        }}>{finishing ? "Finishing…" : "Stop game"}</button> :
+          <button type="button" className="pose-exit" aria-label="Exit game and return home" onClick={onExit}><Icon name="close" /></button>}
+      </div>
       <h1>{meme.name}</h1>
       <p>{meme.prompt}</p>
       <div className="pose-tip"><Icon name="spark" /><span><strong>Hint</strong> · {meme.tip}</span></div>
@@ -163,11 +174,12 @@ export function PoseScreen({ onExit, meme, round, total, duration, suspended, fi
         </div>
       </div>
     </div>
-    <RoundControls key={meme.id} duration={meme.boss ? bossSeconds : duration} cameraState={cameraState} suspended={suspended} onCapture={onCapture} captureSnapshot={captureSnapshot} />
+    <RoundControls playSound={playSound} key={meme.id} duration={duration} cameraState={cameraState} suspended={suspended} onCapture={onCapture} captureSnapshot={captureSnapshot} />
   </section>;
 }
 
-function RoundControls({ duration: limit, cameraState, suspended, onCapture, captureSnapshot }: {
+function RoundControls({ playSound, duration: limit, cameraState, suspended, onCapture, captureSnapshot }: {
+  playSound: PlaySound;
   duration: number;
   cameraState: CameraState;
   suspended: boolean;
@@ -214,7 +226,16 @@ function RoundControls({ duration: limit, cameraState, suspended, onCapture, cap
     };
   }, [timed, paused, suspended, checking, frameError, cameraState, capture]);
 
-  return <div className="capture-controls"><div className="countdown-wrap">{timed ? <><motion.span aria-hidden="true" className={`countdown ${seconds <= 3 ? "urgent" : ""}`} key={seconds} initial={reduced ? false : { scale: 1.25 }} animate={{ scale: 1 }} transition={{ type: "spring", stiffness: 300, damping: 15 }}>{String(seconds).padStart(2, "0")}</motion.span><div><strong>{paused ? "ON PAUSE" : "SECONDS LEFT"}</strong><button className="text-button pause-button" disabled={checking || frameError || cameraState !== "ready"} onClick={() => setPaused(!paused)} type="button"><Icon name={paused ? "play" : "pause"} />{paused ? "Resume" : "Pause timer"}</button></div><span className="sr-only" role="status">{paused ? "Timer paused" : seconds <= 5 || seconds === limit ? `${seconds} seconds remaining` : "Timer running"}</span></> : <><Icon name="smile" /><div><strong>TAKE YOUR TIME</strong><p>No timer. Just vibes.</p></div></>}</div><Button disabled={checking || cameraState !== "ready"} onClick={capture} variant="pink" className="capture-button"><Icon name="camera" /> {checking ? "SCORING…" : frameError ? "RETRY CAPTURE" : "CAPTURE MY FACE"}</Button><p className="capture-note">{frameError ? "No camera frame arrived. Try capturing again." : timed && cameraState !== "ready" ? "The timer starts when your camera is ready." : timed ? "Auto-captures when the timer ends." : "Capture whenever you feel ready."}</p></div>
+  const lastTick = useRef(0);
+  useEffect(() => {
+    if (cameraState === "ready" && !paused && !suspended && !checking && !frameError &&
+      seconds > 0 && seconds <= 3 && seconds !== lastTick.current) {
+      lastTick.current = seconds;
+      playSound("tick");
+    }
+  }, [cameraState, paused, suspended, checking, frameError, seconds, playSound]);
+
+  return <div className="capture-controls"><div className="countdown-wrap">{timed ? <><motion.span aria-hidden="true" className={`countdown ${seconds <= 3 ? "urgent" : ""}`} key={seconds} initial={reduced ? false : { scale: 1.25 }} animate={{ scale: 1 }} transition={{ type: "spring", stiffness: 300, damping: 15 }}>{String(seconds).padStart(2, "0")}</motion.span><div><strong>{paused ? "ON PAUSE" : "SECONDS LEFT"}</strong><button className="text-button pause-button" disabled={checking || frameError || cameraState !== "ready"} onClick={() => setPaused(!paused)} type="button"><Icon name={paused ? "play" : "pause"} />{paused ? "Resume" : "Pause timer"}</button></div><span className="sr-only" role="status">{paused ? "Timer paused" : seconds <= 5 || seconds === limit ? `${seconds} seconds remaining` : "Timer running"}</span></> : <><Icon name="smile" /><div><strong>TAKE YOUR TIME</strong><p>No timer. Just vibes.</p></div></>}</div><Button data-own-sound disabled={checking || cameraState !== "ready"} onClick={capture} variant="pink" className="capture-button"><Icon name="camera" /> {checking ? "SCORING…" : frameError ? "RETRY CAPTURE" : "CAPTURE MY FACE"}</Button><p className="capture-note">{frameError ? "No camera frame arrived. Try capturing again." : timed && cameraState !== "ready" ? "The timer starts when your camera is ready." : timed ? "Auto-captures when the timer ends." : "Capture whenever you feel ready."}</p></div>
 }
 
 function Confetti() {
